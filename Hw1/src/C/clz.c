@@ -4,7 +4,7 @@
 #include <stddef.h>
 #include <math.h>
 
-int clz(uint32_t x)
+int clz_1(uint32_t x)
 {
     int count = 0;
     for (int i = 31; i >= 0; --i)
