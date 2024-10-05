@@ -22,7 +22,7 @@ loop:
     addi t2, t2, 1
     addi t3, t3, -1
     blt t3, x0, next
-j loop
+    j loop
 next:
     sw t2, 0(a2)
     addi a2, a2, 4
