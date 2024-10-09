@@ -63,13 +63,13 @@ uint32_t IntToFloat(int num)
         // Round to closest
         round_bit = (mantissa >> (shift - 24)) & 0x00000001;
         // Round to even modification
+        // for the round part is XXX.50000
+        // in C, XXY.50000 will be round to closest even
+        // if last_bit Y == 1, then round_bit = 1
+        // if last_bit Y == 0, then round_bit = 0
         last_bit = (mantissa >> (shift - 23)) & 0x00000001;
         temp = (1 << (shift - 24)) - 1;
         temp = mantissa & temp;
-        // if the round part is XXX.5
-        // in C, .5 will be round to closest even
-        // if last_bit == 1, then round_bit = 1
-        // if last_bit == 0, then round_bit = 0
         if (temp == 0 && round_bit == 1)
         {
             round_bit = last_bit;
