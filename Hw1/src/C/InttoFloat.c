@@ -5,7 +5,7 @@
 #include <stddef.h>
 #include <assert.h>
 #include <time.h>
-// Function to count leading zeros in the binary representation of an integer
+
 uint32_t fp32_to_bits(float f)
 {
     union
