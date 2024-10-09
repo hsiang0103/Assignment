@@ -1,8 +1,9 @@
 .data
-num_test: .word 10
-test: .word 48763,-48763,696969,12345,1,0,654,12,0x444444,0x16412
-store: .word 0x20000000
-    
+num_test:   .word 12
+test:       .word -1,0,1,2147483647,-2147483648,48763,54321,123456789,16,256,65536,65535
+answer:     .word 0,32,31,1,0,16,16,5,27,23,15,16    
+statement1: .string "All Test Pass"
+statement2: .string "Wrong, Check Again"
 .text
 main:
     la t0, num_test
