@@ -91,12 +91,13 @@ uint32_t IntToFloat(int num)
 int main()
 {
     srand(time(NULL));
-    int num, y, corner_case[5] = {0, -1, 1, -2147483648, 2147483647};
-    for (int i = 0; i < 5; i++)
+    int num, y, corner_case[10] = {0, -1, 1, -2147483648, 2147483647,0x08000008,0x08000018,48763,-48763,123456789};
+    for (int i = 0; i < 10; i++)
     {
         y = IntToFloat(corner_case[i]);
         // check the output equal to the c conversion//
         assert(y == fp32_to_bits((float)(corner_case[i])));
+        printf("%x\n", y);
     }
     for (int i = 0; i < 1000; i++)
     {

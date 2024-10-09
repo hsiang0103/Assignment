@@ -1,5 +1,6 @@
 num_test: .word 10
-test: .word 48763, -48763, 696969, 12345, 1, 0, 654, 12, 0x444444, 0x16412
+test: .word -1,0,1,2147483647,-2147483648,0x08000008,0x08000018,48763,-48763,123456789
+answer: .word 0,0xbf800000,0x3f800000,0xcf000000,0x4f000000,0x4d000000,0x4d000002,0x473e7b00,0xc73e7b00,0x4ceb79a3
 store: .word 0x20000000
 
 .text
@@ -25,7 +26,7 @@ loop:
     lw t1, 0(s1)   # t1 = num
     li a0, 0
     beq t1, x0, next
-    sign:
+sign:
     slt t3, t1, x0
     beq t3, x0, exponent
     sub t1, x0, t1
@@ -89,8 +90,6 @@ return:
     # a1 = 0x55af
     # a2 = 1
 clz:
-    addi sp, sp, -4             
-    sw ra, 0(sp)    
     li t0, 0      
     li t1, 0x00010000 
     sltu t2, a0, t1
@@ -115,7 +114,5 @@ clz:
     sltu t1, a0, a2 
     add t0, t0, t1
     mv a0, t0     
-    lw ra, 0(sp)           
-    addi sp, sp, 4 
     ret                    
 ##########################################
