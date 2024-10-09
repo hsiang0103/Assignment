@@ -1,9 +1,14 @@
 #include <stdint.h>
+#include <stdlib.h>
 #include <stdio.h>
 #include <stdint.h>
 #include <stddef.h>
 #include <assert.h>
+#include <time.h>
 // Function to count leading zeros in the binary representation of an integer
+
+#define BIAS 127
+#define K 23
 
 float bits_to_fp32(uint32_t w)
 {
@@ -47,72 +52,73 @@ int clz(uint32_t x)
 uint32_t IntToFloat(int num)
 {
     int leading_zero, exponent, mantissa, sign = 0;
-    int shift, round_bit, temp;
+    int shift, round_bit, temp, last_bit;
+    sign = num >> 31;
     // If num is 0, the function directly returns 0
     if (num == 0)
     {
         return 0;
     }
-
-    // If the integer is negative, the sign is set to 1.
     // The absolute value of num is taken to proceed with the conversion.
     if (num < 0)
     {
         num = -num;
-        sign = 1;
     }
-
-    // calculates the number of leading zeros 
+    // calculates the number of leading zeros
     leading_zero = clz(num);
-
+    shift = 31 - leading_zero;
     // The exponent in IEEE 754 format is stored with a bias of 127
     // So exponent = 127 + (31 - leading_zero);
-    exponent = 158 - leading_zero;
+    exponent = 127 + shift;
 
-    // Determines how many bit should be shifted to align for the mantissa.
-    // shift =  23 - (31 - leading_zero);
-    shift = -8 + leading_zero;
-    
-    if (shift >= 0)
+    mantissa = num ^ (1 << shift);
+    if (shift > 23)
     {
-        // no rounding for |number| < 2^24
-        round_bit = 0;
-        temp = (num << shift);
+        // Round to closest
+        round_bit = (mantissa >> (shift - 24)) & 0x00000001;
+        // Round to even modification
+        last_bit = (mantissa >> (shift - 23)) & 0x00000001;
+        temp = (1 << (shift - 24)) - 1;
+        temp = mantissa & temp;
+        // if the round part is XXX.5
+        // in C, .5 will be round to closest even
+        // if last_bit == 1, then round_bit = 1
+        // if last_bit == 0, then round_bit = 0
+        if (temp == 0 && round_bit == 1)
+        {
+            round_bit = last_bit;
+        }
+        mantissa = mantissa >> shift - 23;
+        mantissa = mantissa + round_bit;
     }
     else
     {
-        // rounding for |number| > 2^24
-        // The round_bit is set to the least significant bit of the shifted-off part.
-        shift = -shift;
-        round_bit = (num >> (shift - 1));
-        temp = (num >> shift);
+        mantissa = mantissa << 23 - shift;
     }
-
-    // The mantissa is formed by taking the lower 23 bits of the shifted number 
-    // (temp & 0x007FFFFF).
-    // If round_bit is set, it adds 1 to the mantissa to apply the rounding.
-    mantissa = (temp & 0x007FFFFF) + round_bit;
-
     // The function assembles the single-precision floating-point number by packing:
     // The sign bit into the most significant bit 31,
     // The 8-bit exponent into bits 30-23,
     // The 23-bit mantissa into bits 22-0.
-    return (sign << 31) | (exponent << 23) | mantissa;
+    return ((sign << 31) | (exponent << 23)) + mantissa;
 }
 
 int main()
 {
-
-    int num[10] = {48763, -48763, 696969, 12345, 1, 0, 654, 12, 0x444444, 0x16412};
-    uint32_t y;
-    for (int i = 0; i < 10; i++)
+    srand(time(NULL));
+    int num, y, corner_case[5] = {0, -1, 1, -2147483648, 2147483647};
+    for (int i = 0; i < 5; i++)
     {
-        y = IntToFloat(num[i]);
+        y = IntToFloat(corner_case[i]);
         // check the output equal to the c conversion//
-        // careful, for the number > 2^24 output will loss some precision//
-        assert(y == fp32_to_bits((float)(num[i])));
-
-        printf("The signle-precision bit representaion of %8d is %x\n", num[i], y);
+        assert(y == fp32_to_bits((float)(corner_case[i])));
     }
+    for (int i = 0; i < 1000; i++)
+    {
+        num = ((rand() << 17) | rand());
+        y = IntToFloat(num);
+        // check the output equal to the c conversion//
+        assert(y == fp32_to_bits((float)(num)));
+    }
+    printf("All test pass!!\n");
     return 0;
 }
