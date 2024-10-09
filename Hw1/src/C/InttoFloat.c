@@ -6,20 +6,6 @@
 #include <assert.h>
 #include <time.h>
 // Function to count leading zeros in the binary representation of an integer
-
-#define BIAS 127
-#define K 23
-
-float bits_to_fp32(uint32_t w)
-{
-    union
-    {
-        uint32_t as_bits;
-        float as_value;
-    } fp32 = {.as_bits = w};
-    return fp32.as_value;
-}
-
 uint32_t fp32_to_bits(float f)
 {
     union
