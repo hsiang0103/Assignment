@@ -37,8 +37,8 @@ int clz(uint32_t x)
 // Function to convert integer to floating-point representation
 uint32_t IntToFloat(int num)
 {
-    int leading_zero, exponent, mantissa, sign = 0;
-    int shift, round_bit, temp, last_bit;
+    int leading_zero, exponent, mantissa, sign;
+    int shift, round_bit = 0, temp, last_bit;
     sign = num >> 31;
     // If num is 0, the function directly returns 0
     if (num == 0)
@@ -91,7 +91,7 @@ uint32_t IntToFloat(int num)
 int main()
 {
     srand(time(NULL));
-    int num, y, corner_case[7] = {0, -1, 1, -2147483648, 2147483647,0x08000008,0x08000018};
+    int num, y, corner_case[7] = {0, -1, 1, -2147483648, 2147483647, 0x08000008, 0x08000018};
     for (int i = 0; i < 7; i++)
     {
         y = IntToFloat(corner_case[i]);
@@ -105,6 +105,5 @@ int main()
         // check the output equal to the c conversion//
         assert(y == fp32_to_bits((float)(num)));
     }
-    printf("All test pass!!\n");
     return 0;
 }
