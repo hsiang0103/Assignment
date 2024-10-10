@@ -11,7 +11,6 @@ main:
     lw t0, 0(s0)   # t0 = num_test
     la s1, test
     la t2, answer   
-##########################################
 loop:       
     lw t1, 0(s1)   # t1 = num
     lw a2, 0(t2)   # a2 = answer
@@ -70,7 +69,6 @@ merge:
     slli t4, t4, 23
     or a0, t3, t4
     add t1, a0, t5
-##########################################
 next:
     bne t1, a2, wrong 
     addi t2, t2, 4
