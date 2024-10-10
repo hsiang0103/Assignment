@@ -98,7 +98,7 @@ int main()
         // check the output equal to the c conversion//
         assert(y == fp32_to_bits((float)(corner_case[i])));
     }
-    for (int i = 0; i < 1000; i++)
+    for (int i = 0; i < 10000; i++)
     {
         num = ((rand() << 17) | rand());
         y = IntToFloat(num);

@@ -1,8 +1,11 @@
 #include <stdint.h>
+#include <stdlib.h>
 #include <stdio.h>
 #include <stdint.h>
 #include <stddef.h>
-#include <math.h>
+#include <assert.h>
+#include <time.h>
+
 
 int clz_1(uint32_t x)
 {
@@ -90,14 +93,34 @@ int clz_4(uint32_t x)
 
 int main()
 {
-    int num[10] = {48763, -48763, 696969, 12345, 1, 0, 654, 12, 0x00444444, 0x00016412};
-    uint32_t y;
-    for (int i = 0; i < 10; i++)
+    srand(time(NULL));
+    int num, corner_case[6] = {-1, 1, -2147483648, 2147483647,0x08000008,0x08000018};
+    int y1,y2,y3,y4,answer;
+    for (int i = 0; i < 6; i++)
     {
-        y = clz_4(num[i]);
-        // printf("%d\n", num[i]);
-        printf("%d\n", y);
-        // printf("%f\n", bits_to_fp32(y));
+        answer = __builtin_clz(corner_case[i]);
+        y1 = clz_1(corner_case[i]);
+        assert(y1 == answer);
+        y2 = clz_2(corner_case[i]);
+        assert(y2 == answer);
+        y3 = clz_3(corner_case[i]);
+        assert(y3 == answer);
+        y4 = clz_4(corner_case[i]);
+        assert(y4 == answer);
     }
+    for (int i = 0; i < 10000; i++)
+    {
+        num = ((rand() << 17) | rand());
+        answer = __builtin_clz(num);
+        y1 = clz_1(num);
+        assert(y1 == answer);
+        y2 = clz_2(num);
+        assert(y2 == answer);
+        y3 = clz_3(num);
+        assert(y3 == answer);
+        y4 = clz_4(num);
+        assert(y4 == answer);
+    }
+    printf("All test pass!!\n");
     return 0;
 }
