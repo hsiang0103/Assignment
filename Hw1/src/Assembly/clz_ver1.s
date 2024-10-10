@@ -7,12 +7,12 @@ statement2: .string "Wrong, Check Again"
 .text
 main:
     la t0, num_test
+    lw a0, 0(t0)   # a0 = num_test
     la t1, test
-    lw a0, 0(t0)
-    la a2, store
-    lw a2, 0(a2)
+    la t6, answer   
 count:
-    lw a1, 0(t1)
+    lw a1, 0(t1)   # a1 = number
+    lw a2, 0(t6)   # a2 = answer
     li t2, 0
     li t3, 31
     li t4, 1
@@ -22,15 +22,22 @@ loop:
     bne t5, x0, next
     addi t2, t2, 1
     addi t3, t3, -1
-    blt t3, x0, next
-    j loop
+    bge t3, x0, loop
 next:
-    sw t2, 0(a2)
-    addi a2, a2, 4
+    bne t2, a2, wrong 
+    addi t6, t6, 4
     addi t1, t1, 4
     addi a0, a0, -1
-    bge a0, t4, count
+    bne a0, x0, count
 return:
-    li t3, 31
-    li a7, 10
+    la a0, statement1
+    addi a7, zero, 4
+    ecall  
+    j fin
+wrong:
+    la a0, statement2
+    addi a7, zero, 4
+    ecall
+fin:
+    li a7, 10  
     ecall

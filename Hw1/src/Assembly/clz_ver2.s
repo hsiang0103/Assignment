@@ -1,5 +1,6 @@
 .data
 num_test:   .word 12
+constant:   .word 0x0000FFFF,0x00FFFFFF,0x0FFFFFFF,0x3FFFFFFF,0x7FFFFFFF
 test:       .word -1,0,1,2147483647,-2147483648,48763,54321,123456789,16,256,65536,65535
 answer:     .word 0,32,31,1,0,16,16,5,27,23,15,16    
 statement1: .string "All Test Pass"
@@ -7,49 +8,42 @@ statement2: .string "Wrong, Check Again"
 .text
 main:
     la t0, num_test
-    la t1, test
-    la a2, store   
     lw a0, 0(t0)   # a0 = num_test
-    addi a0, a0, -1
-    lw a2, 0(a2)   # a2 = store address
+    la t1, test
+    la t4, answer   
 count:
     lw a1, 0(t1)   # a1 = number
+    lw a2, 0(t4)   # a2 = answer
     li t2, 0       # t2 = count     
-A32:
-    bne a1, x0, A16
+    li t6, 32
+    la t5, constant  
+    bne a1, x0, loop
     li t2, 32
     j next
-A16:
-    li t3, 0x0000FFFF   
-    bltu t3, a1, A8
-    addi t2, t2, 16
-    slli a1, a1, 16
-A8:
-    li t3, 0x00FFFFFF   
-    bltu t3, a1, A4
-    addi t2, t2, 8
-    slli a1, a1, 8
-A4:
-    li t3, 0x0FFFFFFF   
-    bltu t3, a1, A2
-    addi t2, t2, 4
-    slli a1, a1, 4
-A2:
-    li t3, 0x3FFFFFFF   
-    bltu t3, a1, A1
-    addi t2, t2, 2
-    slli a1, a1, 2
-A1:
-    li t3, 0x7FFFFFFF   
-    bltu t3, a1, next
-    addi t2, t2, 1
-    slli a1, a1, 1
+loop:   
+    lw t3, 0(t5)
+    srli t6, t6, 1
+    beq t6, x0, next
+    addi t5, t5, 4
+    bltu t3, a1, loop
+    add t2, t2, t6
+    sll a1, a1, t6
+    j loop
 next:
-    sw t2, 0(a2)
-    addi a2, a2, 4
+    bne t2, a2, wrong 
+    addi t4, t4, 4
     addi t1, t1, 4
     addi a0, a0, -1
-    bge a0, x0, count
+    bne a0, x0, count
 return:
-    li a7, 10
+    la a0, statement1
+    addi a7, zero, 4
+    ecall  
+    j fin
+wrong:
+    la a0, statement2
+    addi a7, zero, 4
+    ecall
+fin:
+    li a7, 10   
     ecall

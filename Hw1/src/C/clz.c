@@ -73,6 +73,7 @@ int clz_3(uint32_t x)
     count += (x == 0);
     return count;
 }
+
 int clz_4(uint32_t x)
 {
     int count = 0, temp;
