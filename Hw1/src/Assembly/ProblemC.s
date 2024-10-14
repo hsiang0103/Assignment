@@ -1,7 +1,7 @@
 .data
-num_test:   .word 7
-test:       .word 0x1234,0x5678,0x4876,0xF123,0xFC00,0x0400,0x3555
-answer:     .word 0x3A468000,0x42cf0000,0x410ec000,0xc6246000,0xFF800000,0x38800000,0x3EAAA000 
+num_test:   .word 10
+test:       .word 0x1234,0x5678,0x4876,0xF123,0xFC00,0x0400,0x3555,0x0022,0x0001,0x00FF
+answer:     .word 0x3A468000,0x42cf0000,0x410ec000,0xc6246000,0xFF800000,0x38800000,0x3eaaa000,0x36080000,0x33800000,0x377f0000
 statement1: .string "All Test Pass"
 statement2: .string "Wrong, Check Again"
 .text
@@ -76,29 +76,17 @@ fin:
     ecall
 ##########################################
 clz:
-    li t0, 0      
-    li t1, 0x00010000 
-    sltu t2, a0, t1
-    slli t2, t2, 4
-    add t0, t0, t2
-    sll a0, a0, t2
-    li t1, 0x01000000
-    sltu t2, a0, t1
-    slli t2, t2, 3
-    add t0, t0, t2
-    sll a0, a0, t2
-    li t1, 0x10000000  
-    sltu t2, a0, t1
-    slli t2, t2, 2
-    add t0, t0, t2
-    sll a0, a0, t2
-    srli t1, a0, 27
-    andi t1, t1, 0x1e
-    srl t1, a1, t1
-    andi t1, t1, 3
-    add t0, t0, t1
-    sltiu t1, a0, 1
-    add t0, t0, t1
-    mv a0, t0     
-    ret                    
+    li t2, 0
+    li s3, 31
+    li t1, 1
+loop:
+    sll t0, t1, s3
+    and t0, a0, t0
+    bne t0, x0, stop
+    addi t2, t2, 1
+    addi s3, s3, -1
+    bge s3, x0, loop
+stop: 
+    mv a0, t2  
+    ret                        
 ##########################################

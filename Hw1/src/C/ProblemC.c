@@ -34,3 +34,13 @@ static inline uint32_t fp16_to_fp32(uint16_t h)
     const int32_t zero_mask = (int32_t)(nonsign - 1) >> 31;
     return sign | ((((nonsign << renorm_shift >> 3) + ((0x70 - renorm_shift) << 23)) | inf_nan_mask) & ~zero_mask);
 }
+
+int main()
+{
+    uint16_t x[10] = {0x1234, 0x5678, 0x4876, 0xF123, 0xFC00, 0x0400, 0x3555, 0x0022, 0x0001, 0x00FF};
+    for (int i = 0; i < 10; i++)
+    {
+        uint32_t y = fp16_to_fp32(x[i]);
+        printf("fp16:%4x -> fp32:%8x\n", x[i], y);
+    }
+}
