@@ -34,11 +34,11 @@ int clz(uint32_t x)
     return count;
 }
 
-// Function to convert integer to floating-point representation
+// Function to convert integer to floating-point representationuint32_t IntToFloat(int num)
 uint32_t IntToFloat(int num)
 {
-    int leading_zero, exponent, mantissa, sign;
-    int shift, round_bit = 0, temp, last_bit;
+    int leading_zero, exponent, mantissa, sign = 0, abs_num = num;
+    int shift, round_bit, temp, last_bit;
     sign = num >> 31;
     // If num is 0, the function directly returns 0
     if (num == 0)
@@ -48,28 +48,28 @@ uint32_t IntToFloat(int num)
     // The absolute value of num is taken to proceed with the conversion.
     if (num < 0)
     {
-        num = -num;
+        abs_num = -num;
     }
     // calculates the number of leading zeros
-    leading_zero = clz(num);
+    leading_zero = clz(abs_num);
     shift = 31 - leading_zero;
     // The exponent in IEEE 754 format is stored with a bias of 127
     // So exponent = 127 + (31 - leading_zero);
     exponent = 127 + shift;
 
-    mantissa = num ^ (1 << shift);
+    mantissa = abs_num ^ (1 << shift);
     if (shift > 23)
     {
         // Round to closest
         round_bit = (mantissa >> (shift - 24)) & 0x00000001;
         // Round to even modification
-        // for the round part is XXX.50000
-        // in C, XXY.50000 will be round to closest even
-        // if last_bit Y == 1, then round_bit = 1
-        // if last_bit Y == 0, then round_bit = 0
         last_bit = (mantissa >> (shift - 23)) & 0x00000001;
         temp = (1 << (shift - 24)) - 1;
         temp = mantissa & temp;
+        // if the round part is XXX.5
+        // in C, .5 will be round to closest even
+        // if last_bit == 1, then round_bit = 1
+        // if last_bit == 0, then round_bit = 0
         if (temp == 0 && round_bit == 1)
         {
             round_bit = last_bit;
@@ -85,7 +85,12 @@ uint32_t IntToFloat(int num)
     // The sign bit into the most significant bit 31,
     // The 8-bit exponent into bits 30-23,
     // The 23-bit mantissa into bits 22-0.
-    return ((sign << 31) | (exponent << 23)) + mantissa;
+    uint32_t value = ((sign << 31) | (exponent << 23)) + mantissa;
+    
+    //internal validation
+    assert(value == fp32_to_bits((float)(num)));
+
+    return value;
 }
 
 int main()
@@ -105,5 +110,6 @@ int main()
         // check the output equal to the c conversion//
         assert(y == fp32_to_bits((float)(num)));
     }
+    printf("All Test Pass!!");
     return 0;
 }
