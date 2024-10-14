@@ -1,2 +1,0 @@
-
-        float as_value;
