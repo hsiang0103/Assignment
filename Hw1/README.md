@@ -3,6 +3,8 @@ The goal of this problem is to convert a 32-bit signed integer into a single-pre
 
 reference: 
 
+https://hackmd.io/@hsuhsiang/r1XrH6sAA#Int-to-Float-conversion
+
 https://onestepcode.com/int-to-float-c/ 
 
 https://evanw.github.io/float-toy/
